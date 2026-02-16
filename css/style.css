@@ -288,6 +288,23 @@ section {
 .section-light a { color: var(--dark); }
 .section-light a:hover { color: var(--gold); }
 
+/* Consecutive dark sections separator */
+.section-dark + .section-dark { border-top: 1px solid var(--border-light); }
+
+/* Section-light overrides for dark-bg components (leader cards, timeline) */
+.section-light .leader-card { background: var(--white); border-color: var(--border-dark); }
+.section-light .leader-card:hover { box-shadow: 0 20px 60px rgba(0,0,0,0.1); }
+.section-light .leader-card h3 { color: var(--text-dark); }
+.section-light .leader-card .desc { color: var(--text-dark-muted); }
+.section-light .leader-card .meta { color: var(--text-dark-muted); }
+.section-light .timeline::before { background: var(--border-dark); }
+.section-light .timeline-item::before { box-shadow: 0 0 0 4px var(--cream), 0 0 0 5px rgba(201,169,110,0.3); }
+.section-light .timeline-role { color: var(--text-dark); }
+.section-light .timeline-date { color: var(--text-dark-muted); }
+.section-light .timeline-company { color: var(--text-dark-muted); }
+.section-light .timeline-company a { color: var(--gold); }
+.section-light .timeline-oneliner { color: var(--text-dark-muted); }
+
 /* Section numbers — large decorative */
 .section-number {
   position: absolute;
@@ -346,6 +363,7 @@ section {
 }
 .about-photo {
   position: relative;
+  z-index: 1;
 }
 .about-photo img {
   border-radius: 16px;
@@ -468,8 +486,7 @@ section {
   width: auto;
   margin: 0 auto 1.5rem;
   object-fit: contain;
-  filter: brightness(0) invert(1);
-  opacity: 0.7;
+  opacity: 0.8;
   transition: opacity 0.3s;
 }
 .leader-card:hover img { opacity: 1; }
