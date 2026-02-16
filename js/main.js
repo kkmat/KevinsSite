@@ -1,117 +1,116 @@
-(function ($) {
-	"use strict";
-	var nav = $('nav');
-  var navHeight = nav.outerHeight();
-  
-  $('.navbar-toggler').on('click', function() {
-    if( ! $('#mainNav').hasClass('navbar-reduce')) {
-      $('#mainNav').addClass('navbar-reduce');
-    }
-  })
+// Kevin Elanjickal — vanilla JS
+(function () {
+  'use strict';
 
-  // Preloader
-  $(window).on('load', function () {
-    if ($('#preloader').length) {
-      $('#preloader').delay(100).fadeOut('slow', function () {
-        $(this).remove();
+  // Navbar scroll behaviour
+  var nav = document.querySelector('.nav');
+  if (nav) {
+    window.addEventListener('scroll', function () {
+      nav.classList.toggle('scrolled', window.scrollY > 50);
+    });
+    // Trigger on load for detail pages
+    nav.classList.toggle('scrolled', window.scrollY > 50);
+  }
+
+  // Mobile menu toggle
+  var toggle = document.querySelector('.nav-toggle');
+  var links = document.querySelector('.nav-links');
+  if (toggle && links) {
+    toggle.addEventListener('click', function () {
+      toggle.classList.toggle('active');
+      links.classList.toggle('open');
+    });
+    // Close on link click
+    links.querySelectorAll('a').forEach(function (a) {
+      a.addEventListener('click', function () {
+        toggle.classList.remove('active');
+        links.classList.remove('open');
       });
+    });
+  }
+
+  // Scroll reveal (Intersection Observer)
+  var reveals = document.querySelectorAll('.reveal');
+  if (reveals.length && 'IntersectionObserver' in window) {
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          observer.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.15 });
+    reveals.forEach(function (el) { observer.observe(el); });
+  } else {
+    // Fallback: show all
+    reveals.forEach(function (el) { el.classList.add('visible'); });
+  }
+
+  // Typing effect
+  var typedEl = document.querySelector('.hero-typed');
+  if (typedEl) {
+    var strings = ['Entrepreneur', 'Strategic Leadership', 'Digital Transformation'];
+    var idx = 0;
+    var charIdx = 0;
+    var deleting = false;
+    var speed = 80;
+
+    function type() {
+      var current = strings[idx];
+      if (deleting) {
+        charIdx--;
+        speed = 30;
+      } else {
+        charIdx++;
+        speed = 80;
+      }
+
+      typedEl.innerHTML = current.substring(0, charIdx) + '<span class="cursor"></span>';
+
+      if (!deleting && charIdx === current.length) {
+        speed = 1500;
+        deleting = true;
+      } else if (deleting && charIdx === 0) {
+        deleting = false;
+        idx = (idx + 1) % strings.length;
+        speed = 400;
+      }
+
+      setTimeout(type, speed);
     }
+    type();
+  }
+
+  // Smooth scroll for anchor links
+  document.querySelectorAll('a[href^="#"]').forEach(function (a) {
+    a.addEventListener('click', function (e) {
+      var href = a.getAttribute('href');
+      if (href === '#') return;
+      var target = document.querySelector(href);
+      if (target) {
+        e.preventDefault();
+        var navH = nav ? nav.offsetHeight : 0;
+        var top = target.getBoundingClientRect().top + window.scrollY - navH;
+        window.scrollTo({ top: top, behavior: 'smooth' });
+      }
+    });
   });
 
-  // Back to top button
-  $(window).scroll(function() {
-    if ($(this).scrollTop() > 100) {
-      $('.back-to-top').fadeIn('slow');
-    } else {
-      $('.back-to-top').fadeOut('slow');
-    }
+  // Accordion
+  document.querySelectorAll('.accordion-toggle').forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      btn.classList.toggle('open');
+      var content = btn.nextElementSibling;
+      if (btn.classList.contains('open')) {
+        content.style.maxHeight = content.scrollHeight + 'px';
+      } else {
+        content.style.maxHeight = '0';
+      }
+    });
   });
-  $('.back-to-top').click(function(){
-    $('html, body').animate({scrollTop : 0},1500, 'easeInOutExpo');
-    return false;
-  });
 
-	/*--/ Star ScrollTop /--*/
-	$('.scrolltop-mf').on("click", function () {
-		$('html, body').animate({
-			scrollTop: 0
-		}, 1000);
-	});
-
-	/*--/ Star Counter /--*/
-	$('.counter').counterUp({
-		delay: 15,
-		time: 2000
-	});
-
-	/*--/ Star Scrolling nav /--*/
-	$('a.js-scroll[href*="#"]:not([href="#"])').on("click", function () {
-		if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-			var target = $(this.hash);
-			target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-			if (target.length) {
-				$('html, body').animate({
-					scrollTop: (target.offset().top - navHeight + 5)
-				}, 1000, "easeInOutExpo");
-				return false;
-			}
-		}
-	});
-
-	// Closes responsive menu when a scroll trigger link is clicked
-	$('.js-scroll').on("click", function () {
-		$('.navbar-collapse').collapse('hide');
-	});
-
-	// Activate scrollspy to add active class to navbar items on scroll
-	$('body').scrollspy({
-		target: '#mainNav',
-		offset: navHeight
-	});
-	/*--/ End Scrolling nav /--*/
-
-	/*--/ Navbar Menu Reduce /--*/
-	$(window).trigger('scroll');
-	$(window).on('scroll', function () {
-		var pixels = 50; 
-		var top = 1200;
-		if ($(window).scrollTop() > pixels) {
-			$('.navbar-expand-md').addClass('navbar-reduce');
-			$('.navbar-expand-md').removeClass('navbar-trans');
-		} else {
-			$('.navbar-expand-md').addClass('navbar-trans');
-			$('.navbar-expand-md').removeClass('navbar-reduce');
-		}
-		if ($(window).scrollTop() > top) {
-			$('.scrolltop-mf').fadeIn(1000, "easeInOutExpo");
-		} else {
-			$('.scrolltop-mf').fadeOut(1000, "easeInOutExpo");
-		}
-	});
-
-	/*--/ Star Typed /--*/
-	if ($('.text-slider').length == 1) {
-    var typed_strings = $('.text-slider-items').text();
-		var typed = new Typed('.text-slider', {
-			strings: typed_strings.split(','),
-			typeSpeed: 80,
-			loop: true,
-			backDelay: 1100,
-			backSpeed: 30
-		});
-	}
-
-	/*--/ Testimonials owl /--*/
-	$('#testimonial-mf').owlCarousel({
-		margin: 20,
-		autoplay: true,
-		autoplayTimeout: 4000,
-		autoplayHoverPause: true,
-		responsive: {
-			0: {
-				items: 1,
-			}
-		}
-	});
-
-})(jQuery);
+  // Detail pages: force scrolled nav on load
+  if (document.querySelector('.detail-hero')) {
+    if (nav) nav.classList.add('scrolled');
+  }
+})();
