@@ -62,6 +62,8 @@
     var deleting = false;
     var speed = 80;
 
+    var typeTimer = null;
+
     function type() {
       var current = strings[idx];
       if (deleting) {
@@ -83,9 +85,17 @@
         speed = 500;
       }
 
-      setTimeout(type, speed);
+      typeTimer = setTimeout(type, speed);
     }
     type();
+
+    document.addEventListener('visibilitychange', function () {
+      if (document.hidden) {
+        clearTimeout(typeTimer);
+      } else {
+        typeTimer = setTimeout(type, speed);
+      }
+    });
   }
 
   // ==================== SMOOTH SCROLL ====================
@@ -103,19 +113,6 @@
     });
   });
 
-  // ==================== ACCORDION ====================
-  document.querySelectorAll('.accordion-toggle').forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      btn.classList.toggle('open');
-      var content = btn.nextElementSibling;
-      if (btn.classList.contains('open')) {
-        content.style.maxHeight = content.scrollHeight + 'px';
-      } else {
-        content.style.maxHeight = '0';
-      }
-    });
-  });
-
   // ==================== COUNTER ANIMATION ====================
   var counters = document.querySelectorAll('.stat-num');
   if (counters.length && 'IntersectionObserver' in window) {
@@ -124,9 +121,10 @@
         if (entry.isIntersecting) {
           var el = entry.target;
           var text = el.textContent.trim();
-          var suffix = text.replace(/[0-9]/g, '');
-          var target = parseInt(text);
-          if (isNaN(target)) return;
+          var match = text.match(/^(\d+)(.*)$/);
+          if (!match) return;
+          var target = parseInt(match[1], 10);
+          var suffix = match[2];
           var duration = 1500;
           var start = 0;
           var startTime = null;
@@ -160,6 +158,21 @@
       }
     }, { passive: true });
   }
+
+  // ==================== SCROLL TO TOP ====================
+  var scrollBtn = document.createElement('button');
+  scrollBtn.className = 'scroll-top';
+  scrollBtn.setAttribute('aria-label', 'Scroll to top');
+  scrollBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2.5" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" d="M5 15l7-7 7 7"/></svg>';
+  document.body.appendChild(scrollBtn);
+
+  window.addEventListener('scroll', function () {
+    scrollBtn.classList.toggle('visible', window.scrollY > 600);
+  }, { passive: true });
+
+  scrollBtn.addEventListener('click', function () {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
 
   // ==================== DETAIL PAGE NAV ====================
   if (document.querySelector('.detail-hero')) {
