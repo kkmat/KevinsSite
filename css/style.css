@@ -12,6 +12,7 @@
   --gold-dim: rgba(201,169,110,0.15);
   --cream: #f5f0eb;
   --cream-dark: #e8e2db;
+  --gold-on-light: #7a5a1e;
   --white: #ffffff;
   --text: rgba(255,255,255,0.85);
   --text-muted: rgba(255,255,255,0.45);
@@ -61,7 +62,7 @@ h1, h2, h3, h4, h5, h6 {
   top: 0;
   left: 0;
   right: 0;
-  z-index: 100;
+  z-index: 1000;
   transition: background 0.4s var(--ease), border-color 0.4s var(--ease);
   border-bottom: 1px solid transparent;
 }
@@ -157,7 +158,7 @@ h1, h2, h3, h4, h5, h6 {
   font-weight: 700;
   color: var(--white);
   padding: 0.6rem 0;
-  transition: color 0.3s, transform 0.3s;
+  transition: color 0.3s, transform 0.3s, opacity 0.3s;
   opacity: 0;
   transform: translateY(20px);
 }
@@ -190,6 +191,8 @@ h1, h2, h3, h4, h5, h6 {
   background-position: center;
   opacity: 0.15;
   filter: grayscale(60%);
+  transform: scale(1.1);
+  will-change: transform;
 }
 .hero-overlay {
   position: absolute;
@@ -285,8 +288,8 @@ section {
 .section-light h4,
 .section-light h5,
 .section-light h6 { color: var(--text-dark); }
-.section-light a { color: var(--dark); }
-.section-light a:hover { color: var(--gold); }
+.section-light a { color: var(--gold-on-light); }
+.section-light a:hover { color: var(--dark); }
 
 /* Consecutive dark sections separator */
 .section-dark + .section-dark { border-top: 1px solid var(--border-light); }
@@ -335,7 +338,7 @@ section {
   margin-bottom: 1.25rem;
 }
 .section-dark .section-label { color: var(--gold); }
-.section-light .section-label { color: var(--gold); }
+.section-light .section-label { color: var(--gold-on-light); }
 .section-header h2 {
   font-size: clamp(2rem, 4vw, 3.5rem);
   letter-spacing: -0.03em;
@@ -418,9 +421,9 @@ section {
   color: var(--dark);
 }
 .section-light .pill {
-  background: rgba(201,169,110,0.1);
-  color: #8a7040;
-  border: 1px solid rgba(201,169,110,0.25);
+  background: rgba(122,90,30,0.1);
+  color: var(--gold-on-light);
+  border: 1px solid rgba(122,90,30,0.2);
 }
 
 /* Stats strip */
@@ -461,6 +464,7 @@ section {
   color: var(--gold);
   margin-bottom: 2rem;
 }
+.section-light .subsection-label { color: var(--gold-on-light); }
 
 /* Leadership cards */
 .leadership-cards {
@@ -605,7 +609,7 @@ section {
   font-weight: 700;
 }
 .edu-card .edu-school {
-  color: var(--gold);
+  color: var(--gold-on-light);
   font-size: 0.8rem;
   font-weight: 600;
   margin-bottom: 0.5rem;
@@ -729,16 +733,8 @@ section {
   overflow: hidden;
 }
 .tech-card:hover { transform: translateY(-6px); }
-.tech-card::before {
-  content: '';
-  position: absolute;
-  inset: 0;
-  background: inherit;
-  opacity: 0;
-  transition: opacity 0.3s;
-}
 .tech-card h4 { color: var(--white); font-size: 1.05rem; margin-bottom: 0.5rem; position: relative; }
-.tech-card p { font-size: 0.8rem; opacity: 0.75; position: relative; }
+.tech-card p { font-size: 0.8rem; color: rgba(255,255,255,0.85); position: relative; }
 .tech-card-icon {
   font-size: 2.5rem;
   margin-bottom: 1rem;
@@ -940,6 +936,7 @@ section {
 .reveal-stagger.visible > *:nth-child(3) { transition-delay: 0.2s; opacity: 1; transform: translateY(0); }
 .reveal-stagger.visible > *:nth-child(4) { transition-delay: 0.3s; opacity: 1; transform: translateY(0); }
 .reveal-stagger.visible > *:nth-child(5) { transition-delay: 0.4s; opacity: 1; transform: translateY(0); }
+.reveal-stagger.visible > *:nth-child(n+6) { transition-delay: 0.5s; opacity: 1; transform: translateY(0); }
 
 /* ===================== DETAIL PAGE STYLES ===================== */
 .detail-hero {
@@ -966,9 +963,10 @@ section {
   display: flex;
   gap: 0.5rem;
   font-size: 0.8rem;
-  color: var(--text-muted);
+  color: var(--white);
+  font-weight: 500;
 }
-.breadcrumb a { color: var(--text-muted); }
+.breadcrumb a { color: var(--text-muted); font-weight: 400; }
 .breadcrumb a:hover { color: var(--gold); }
 .breadcrumb-sep { color: var(--text-muted); }
 
@@ -1047,12 +1045,12 @@ section {
   margin-top: 2.5rem;
   font-weight: 600;
   font-size: 0.85rem;
-  color: var(--gold);
+  color: var(--gold-on-light);
   text-transform: uppercase;
   letter-spacing: 0.1em;
   transition: gap 0.3s var(--ease), color 0.3s;
 }
-.back-link:hover { gap: 0.75rem; color: var(--gold-hover); }
+.back-link:hover { gap: 0.75rem; color: var(--gold); }
 
 /* Detail page images */
 .detail-content .content-images {
@@ -1078,6 +1076,8 @@ section {
   font-size: 0.75rem;
   color: var(--text-muted);
   letter-spacing: 0.05em;
+  border-top: none;
+  padding-top: 0;
 }
 
 /* ===================== RESPONSIVE ===================== */
@@ -1153,4 +1153,19 @@ section {
   .cred-badges { justify-content: flex-start; }
   .footer-buttons { flex-direction: column; }
   .hero-line { height: 50px; }
+}
+
+/* ===================== REDUCED MOTION ===================== */
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+  .reveal, .reveal-stagger > * {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  .hero-bg { transform: scale(1.1) !important; }
+  .scroll-indicator svg { animation: none; }
 }

@@ -28,6 +28,13 @@
         document.body.style.overflow = '';
       });
     });
+    overlay.addEventListener('click', function (e) {
+      if (e.target === overlay) {
+        toggle.classList.remove('active');
+        overlay.classList.remove('active');
+        document.body.style.overflow = '';
+      }
+    });
   }
 
   // ==================== SCROLL REVEAL ====================
