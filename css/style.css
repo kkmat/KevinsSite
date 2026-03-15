@@ -319,9 +319,13 @@ h1, h2, h3, h4, h5, h6 {
   animation-delay: var(--reveal-delay, 0s);
 }
 @keyframes heroFadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
   to {
     opacity: 1;
-    transform: translateY(0);
+    transform: none;
   }
 }
 .hero h1 {
@@ -366,8 +370,10 @@ h1, h2, h3, h4, h5, h6 {
 .scroll-indicator {
   position: absolute;
   bottom: 2.5rem;
-  left: 50%;
-  transform: translateX(-50%);
+  left: 0;
+  right: 0;
+  margin: 0 auto;
+  width: fit-content;
   display: flex;
   flex-direction: column;
   align-items: center;
