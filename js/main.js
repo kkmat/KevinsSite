@@ -188,6 +188,10 @@
   // ==================== COUNTER ANIMATION ====================
   var counters = document.querySelectorAll('.stat-num');
   if (counters.length && 'IntersectionObserver' in window) {
+    // Store original target values before any animation changes them
+    counters.forEach(function (el) {
+      el.setAttribute('data-target', el.textContent.trim());
+    });
     var counterObserver = new IntersectionObserver(function (entries) {
       entries.forEach(function (entry) {
         if (entry.isIntersecting) {
@@ -216,8 +220,18 @@
           counterObserver.unobserve(el);
         }
       });
-    }, { threshold: 0.5 });
+    }, { threshold: 0.1 });
     counters.forEach(function (el) { counterObserver.observe(el); });
+
+    // Fallback: after 3 seconds, force counters to their target values
+    setTimeout(function () {
+      counters.forEach(function (el) {
+        var target = el.getAttribute('data-target');
+        if (target) {
+          el.textContent = target;
+        }
+      });
+    }, 3000);
   }
 
   // ==================== PHASE 3: INTERACTIVE CARDS ====================

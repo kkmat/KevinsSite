@@ -1,4 +1,4 @@
-// Kevin Elanjickal — Detail Page Enhancements (Phase 6)
+// Kevin Elanjickal — Detail Page Enhancements (No GSAP — CSS animations only)
 (function () {
   'use strict';
 
@@ -89,82 +89,11 @@
     });
   });
 
-  // ==================== GSAP ANIMATIONS ====================
-  if (!prefersReducedMotion && typeof gsap !== 'undefined') {
-
-    // --- Detail hero entrance ---
-    var heroTitle = document.querySelector('.detail-hero h1');
-    var breadcrumb = document.querySelector('.detail-hero .breadcrumb');
-    if (heroTitle) {
-      gsap.from(heroTitle, {
-        opacity: 0, y: 30, duration: 0.8, delay: 0.2, ease: 'power3.out'
-      });
-    }
-    if (breadcrumb) {
-      gsap.from(breadcrumb, {
-        opacity: 0, y: 20, duration: 0.6, delay: 0.4, ease: 'power3.out'
-      });
-    }
-
-    // --- Company logo reveal ---
-    var logo = document.querySelector('.company-logo');
-    if (logo) {
-      gsap.from(logo, {
-        opacity: 0, scale: 0.8, duration: 0.7, delay: 0.5, ease: 'back.out(1.7)'
-      });
-    }
-
-    // --- Content sections stagger in ---
-    if (typeof ScrollTrigger !== 'undefined') {
-      gsap.registerPlugin(ScrollTrigger);
-
-      // Animate detail meta
-      var detailMeta = document.querySelector('.detail-meta');
-      if (detailMeta) {
-        gsap.from(detailMeta.children, {
-          opacity: 0, y: 20, stagger: 0.1, duration: 0.5, delay: 0.6,
-          ease: 'power2.out'
-        });
-      }
-
-      // Animate list items
-      var listItems = document.querySelectorAll('.content-wrap li');
-      if (listItems.length > 0) {
-        gsap.from(listItems, {
-          opacity: 0, x: -20, stagger: 0.08, duration: 0.5, delay: 0.8,
-          ease: 'power2.out'
-        });
-      }
-
-      // Animate paragraphs
-      var paragraphs = document.querySelectorAll('.content-wrap > p, .content-wrap > h3');
-      if (paragraphs.length > 0) {
-        paragraphs.forEach(function (p) {
-          gsap.from(p, {
-            opacity: 0, y: 20, duration: 0.6, ease: 'power2.out',
-            scrollTrigger: { trigger: p, start: 'top 90%', once: true }
-          });
-        });
-      }
-
-      // Animate detail-nav
-      var detailNav = document.querySelector('.detail-nav');
-      if (detailNav) {
-        gsap.from(detailNav, {
-          opacity: 0, y: 20, duration: 0.6, ease: 'power2.out',
-          scrollTrigger: { trigger: detailNav, start: 'top 95%', once: true }
-        });
-      }
-
-      // Animate back-link (dofe page)
-      var backLink = document.querySelector('.back-link');
-      if (backLink) {
-        gsap.from(backLink, {
-          opacity: 0, x: -20, duration: 0.5, ease: 'power2.out',
-          scrollTrigger: { trigger: backLink, start: 'top 95%', once: true }
-        });
-      }
-    }
+  // ==================== CSS-BASED ENTRANCE ANIMATIONS ====================
+  if (!prefersReducedMotion) {
+    // Hero title and breadcrumb animate via CSS @keyframes (added in style.css)
+    // For content elements, just make them visible immediately (short pages)
+    // The page-enter animation on body.detail-page handles the overall entrance
   }
 
 })();

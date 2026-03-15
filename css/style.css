@@ -407,7 +407,7 @@ h1, h2, h3, h4, h5, h6 {
 
 /* ===================== SECTIONS ===================== */
 section {
-  padding: 8rem 0;
+  padding: 5rem 0;
   position: relative;
   overflow: hidden;
 }
@@ -432,7 +432,7 @@ section {
 .section-light .leader-card .desc { color: var(--text-dark-muted); }
 .section-light .leader-card .meta { color: var(--text-dark-muted); }
 .section-light .leader-card img { border: 1px solid var(--border-dark); }
-.section-light .leader-card img.logo-light { background: #333; border: 1px solid rgba(255,255,255,0.1); }
+.section-light .leader-card img.logo-light { background: #333; border: 1px solid rgba(255,255,255,0.1); filter: brightness(2) contrast(1.2); }
 .section-light .timeline::before { background: var(--border-dark); }
 .section-light .timeline-item::before { box-shadow: 0 0 0 4px var(--cream), 0 0 0 5px rgba(201,169,110,0.3); }
 .section-light .timeline-role { color: var(--text-dark); }
@@ -464,7 +464,7 @@ section {
   display: inline-block;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   font-weight: 600;
   margin-bottom: 1.25rem;
 }
@@ -590,7 +590,7 @@ section {
   display: inline-block;
   font-size: 0.7rem;
   text-transform: uppercase;
-  letter-spacing: 0.2em;
+  letter-spacing: 0.15em;
   font-weight: 600;
   color: var(--gold);
   margin-bottom: 2rem;
@@ -634,6 +634,7 @@ section {
 .leader-card img.logo-light {
   background: #333;
   border: 1px solid rgba(255,255,255,0.1);
+  filter: brightness(2) contrast(1.2);
 }
 .leader-card .role {
   color: var(--gold);
@@ -1049,7 +1050,7 @@ section {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 900;
+  z-index: 9000;
   opacity: 0;
   visibility: hidden;
   transform: scale(0.5) translateY(20px);
@@ -1422,8 +1423,8 @@ section {
 
 .detail-content {
   padding: 5rem 0;
-  background: var(--cream);
-  color: var(--text-dark);
+  background: var(--dark);
+  color: var(--text);
 }
 .detail-content .content-wrap {
   max-width: 800px;
@@ -1434,8 +1435,8 @@ section {
   margin-bottom: 2rem;
   padding: 8px 16px;
   border-radius: 10px;
-  background: var(--white);
-  border: 1px solid var(--border-dark);
+  background: var(--dark-3);
+  border: 1px solid var(--border-light);
   object-fit: contain;
 }
 .detail-content .company-logo.logo-has-bg {
@@ -1448,7 +1449,7 @@ section {
 }
 .detail-content .company-logo.logo-light {
   background: #333;
-  border: 1px solid rgba(0,0,0,0.1);
+  border: 1px solid rgba(255,255,255,0.1);
 }
 .detail-content .detail-meta {
   display: flex;
@@ -1456,27 +1457,27 @@ section {
   gap: 2rem;
   margin-bottom: 2.5rem;
   padding-bottom: 2rem;
-  border-bottom: 1px solid var(--border-dark);
+  border-bottom: 1px solid var(--border-light);
   font-size: 0.9rem;
-  color: var(--text-dark-muted);
+  color: rgba(255,255,255,0.75);
 }
 .detail-content .detail-meta strong {
-  color: var(--text-dark);
+  color: var(--gold);
 }
 .detail-content h1 {
   font-size: clamp(1.5rem, 3vw, 2.25rem);
   margin-bottom: 1.25rem;
-  color: var(--text-dark);
+  color: var(--white);
 }
 .detail-content h3 {
   font-size: 1.35rem;
   margin: 2.5rem 0 1rem;
-  color: var(--text-dark);
+  color: var(--gold);
 }
 .detail-content p {
   margin-bottom: 1rem;
   line-height: 1.85;
-  color: var(--text-dark);
+  color: var(--text);
 }
 .detail-content ul {
   list-style: none;
@@ -1488,7 +1489,7 @@ section {
   line-height: 1.8;
   padding-left: 1.5rem;
   position: relative;
-  color: var(--text-dark);
+  color: var(--text);
 }
 .detail-content ul li::before {
   content: '';
@@ -1813,6 +1814,17 @@ body.page-exit {
   color: var(--white);
   margin-bottom: 1rem;
   letter-spacing: -0.02em;
+  animation: detailFadeUp 0.8s ease-out 0.2s both;
+}
+.detail-hero .breadcrumb {
+  animation: detailFadeUp 0.6s ease-out 0.4s both;
+}
+@keyframes detailFadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.detail-page .company-logo {
+  animation: detailFadeUp 0.7s ease-out 0.5s both;
 }
 
 /* --- Breadcrumb --- */
@@ -2070,6 +2082,7 @@ body.page-exit {
   .beyond-parallax-bg { display: none !important; }
   /* Phase 6: disable detail page animations */
   body.detail-page { animation: none !important; }
+  .detail-hero h1, .detail-hero .breadcrumb, .detail-page .company-logo { animation: none !important; }
   .reading-progress-bar { transition: none !important; }
   /* Phase 5: disable visual effects */
   body::after { display: none !important; }
