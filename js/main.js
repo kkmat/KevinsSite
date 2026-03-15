@@ -1,17 +1,6 @@
-// Kevin Elanjickal — Premium Portfolio JS (Phase 2: GSAP ScrollTrigger)
+// Kevin Elanjickal — Premium Portfolio JS (Vanilla IntersectionObserver)
 (function () {
   'use strict';
-
-  // ==================== SAFETY NET: force content visible after 3s ====================
-  setTimeout(function () {
-    document.querySelectorAll('.reveal, .reveal-stagger > *, .hero-reveal').forEach(function (el) {
-      if (getComputedStyle(el).opacity === '0') {
-        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
-        el.style.opacity = '1';
-        el.style.transform = 'none';
-      }
-    });
-  }, 3000);
 
   // ==================== REDUCED MOTION CHECK ====================
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -51,312 +40,65 @@
     });
   }
 
-  // ==================== GSAP SCROLL ANIMATIONS ====================
-  if (!prefersReducedMotion && typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger);
+  // ==================== SCROLL REVEAL (IntersectionObserver) ====================
+  if (!prefersReducedMotion && 'IntersectionObserver' in window) {
+    var isMobile = window.innerWidth <= 900;
 
-    // --- Helper: check if mobile ---
-    var isMobile = function () { return window.innerWidth <= 900; };
+    // Strategy: only hide top-level .reveal elements and direct children of .reveal-stagger.
+    // Do NOT double-hide children inside already-hidden parents.
 
-    // --- About section: photo from left, text from right ---
-    var aboutPhoto = document.querySelector('.about-photo');
-    var aboutBio = document.querySelector('.about-bio');
-    var aboutGrid = document.querySelector('.about-grid');
-    if (aboutGrid) {
-      // Animate the parent .about-grid (which has .reveal) header first
-      var aboutHeader = document.querySelector('#about .section-header');
-      if (aboutHeader) {
-        gsap.from(aboutHeader, {
-          opacity: 0, y: 40, duration: 0.8, ease: 'power3.out',
-          scrollTrigger: { trigger: aboutHeader, start: 'top 85%', once: true }
-        });
-      }
-      if (aboutPhoto) {
-        gsap.from(aboutPhoto, {
-          opacity: 0, x: isMobile() ? 0 : -80, y: isMobile() ? 40 : 0,
-          duration: 1, ease: 'power3.out',
-          scrollTrigger: { trigger: aboutGrid, start: 'top 80%', once: true }
-        });
-      }
-      if (aboutBio) {
-        gsap.from(aboutBio, {
-          opacity: 0, x: isMobile() ? 0 : 80, y: isMobile() ? 40 : 0,
-          duration: 1, delay: 0.15, ease: 'power3.out',
-          scrollTrigger: { trigger: aboutGrid, start: 'top 80%', once: true }
-        });
-      }
-      // Mark as handled so generic handler skips it
-      aboutGrid.classList.add('gsap-handled');
-      if (aboutHeader) aboutHeader.classList.add('gsap-handled');
-    }
-
-    // --- Stats strip ---
-    var statsStrip = document.querySelector('.stats-strip');
-    if (statsStrip) {
-      gsap.from(statsStrip, {
-        opacity: 0, y: 40, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: statsStrip, start: 'top 85%', once: true }
-      });
-      statsStrip.classList.add('gsap-handled');
-    }
-
-    // --- Leader cards: staggered cascade from bottom with rotation ---
-    var leaderCards = document.querySelectorAll('.leader-card');
-    if (leaderCards.length) {
-      gsap.from(leaderCards, {
-        opacity: 0, y: 60, rotation: isMobile() ? 0 : 3,
-        duration: 0.7, stagger: 0.15, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: leaderCards[0].parentElement,
-          start: 'top 80%',
-          once: true
-        }
-      });
-      var leaderParent = leaderCards[0].parentElement;
-      if (leaderParent) leaderParent.classList.add('gsap-handled');
-    }
-
-    // --- Timeline items: alternating left/right ---
-    var timelineItems = document.querySelectorAll('.timeline-item');
-    if (timelineItems.length) {
-      timelineItems.forEach(function (item, i) {
-        var fromLeft = i % 2 === 0;
-        gsap.from(item, {
-          opacity: 0,
-          x: isMobile() ? 0 : (fromLeft ? -50 : 50),
-          y: isMobile() ? 30 : 0,
-          duration: 0.7,
-          ease: 'power3.out',
-          scrollTrigger: {
-            trigger: item,
-            start: 'top 85%',
-            once: true
-          }
-        });
-      });
-    }
-
-    // --- Beyond Work: parallax background layer ---
-    var beyondSection = document.getElementById('beyond');
-    if (beyondSection) {
-      // Insert parallax background div
-      var parallaxBg = document.createElement('div');
-      parallaxBg.className = 'beyond-parallax-bg';
-      beyondSection.insertBefore(parallaxBg, beyondSection.firstChild);
-
-      gsap.to(parallaxBg, {
-        y: 120,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: beyondSection,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true
-        }
-      });
-
-      // Beyond featured: fade in with scale
-      var beyondFeatured = document.querySelector('.beyond-featured');
-      if (beyondFeatured) {
-        gsap.from(beyondFeatured, {
-          opacity: 0, y: 50, scale: 0.97, duration: 0.9, ease: 'power3.out',
-          scrollTrigger: { trigger: beyondFeatured, start: 'top 82%', once: true }
-        });
-        beyondFeatured.classList.add('gsap-handled');
-      }
-
-      // Beyond cards: staggered with slight scale
-      var beyondCards = document.querySelectorAll('.beyond-card');
-      if (beyondCards.length) {
-        gsap.from(beyondCards, {
-          opacity: 0, y: 40, scale: 0.95,
-          duration: 0.7, stagger: 0.15, ease: 'power3.out',
-          scrollTrigger: {
-            trigger: beyondCards[0].parentElement,
-            start: 'top 82%',
-            once: true
-          }
-        });
-        var beyondParent = beyondCards[0].parentElement;
-        if (beyondParent) beyondParent.classList.add('gsap-handled');
-      }
-
-      // Beyond card images: parallax zoom on scroll
-      beyondCards.forEach(function (card) {
-        var img = card.querySelector('.beyond-card-img');
-        if (img) {
-          gsap.to(img, {
-            scale: 1.08,
-            ease: 'none',
-            scrollTrigger: {
-              trigger: card,
-              start: 'top bottom',
-              end: 'bottom top',
-              scrub: true
-            }
-          });
-        }
-      });
-    }
-
-    // --- Education cards: 3D flip-in from perspective ---
-    var eduCards = document.querySelectorAll('.edu-card');
-    if (eduCards.length) {
-      gsap.from(eduCards, {
-        opacity: 0, rotateX: isMobile() ? 0 : -60, y: 40,
-        duration: 0.8, stagger: 0.2, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: eduCards[0].parentElement,
-          start: 'top 82%',
-          once: true
-        }
-      });
-      var eduParent = eduCards[0].parentElement;
-      if (eduParent) eduParent.classList.add('gsap-handled');
-    }
-
-    // --- DBA callout ---
-    var dbaCallout = document.querySelector('.dba-callout');
-    if (dbaCallout) {
-      gsap.from(dbaCallout, {
-        opacity: 0, y: 40, scale: 0.97, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: dbaCallout, start: 'top 85%', once: true }
-      });
-      dbaCallout.classList.add('gsap-handled');
-    }
-
-    // --- Credential badges: stagger ---
-    var credBadges = document.querySelector('.cred-badges');
-    if (credBadges) {
-      var badges = credBadges.querySelectorAll('.cred-badge');
-      gsap.from(badges, {
-        opacity: 0, y: 20, duration: 0.5, stagger: 0.08, ease: 'power3.out',
-        scrollTrigger: { trigger: credBadges, start: 'top 85%', once: true }
-      });
-      credBadges.classList.add('gsap-handled');
-    }
-
-    // --- Research cards: stagger ---
-    var researchCards = document.querySelectorAll('.research-card');
-    if (researchCards.length) {
-      gsap.from(researchCards, {
-        opacity: 0, y: 40, duration: 0.7, stagger: 0.15, ease: 'power3.out',
-        scrollTrigger: {
-          trigger: researchCards[0].parentElement,
-          start: 'top 82%',
-          once: true
-        }
-      });
-      var researchParent = researchCards[0].parentElement;
-      if (researchParent) researchParent.classList.add('gsap-handled');
-    }
-
-    // --- Horizontal scroll for tech cards (desktop only) ---
-    var techScrollSection = document.querySelector('.tech-scroll-section');
-    var techScrollTrack = document.querySelector('.tech-scroll-track');
-    if (techScrollSection && techScrollTrack && !isMobile()) {
-      // Calculate how far to scroll horizontally
-      var setupHorizontalScroll = function () {
-        // Kill previous ScrollTrigger if it exists
-        ScrollTrigger.getAll().forEach(function (st) {
-          if (st.vars && st.vars.id === 'techHScroll') st.kill();
-        });
-
-        var trackWidth = techScrollTrack.scrollWidth;
-        var sectionWidth = techScrollSection.offsetWidth;
-        var scrollDistance = trackWidth - sectionWidth;
-
-        if (scrollDistance > 0) {
-          gsap.to(techScrollTrack, {
-            x: -scrollDistance,
-            ease: 'none',
-            scrollTrigger: {
-              id: 'techHScroll',
-              trigger: techScrollSection,
-              start: 'top 60%',
-              end: function () { return '+=' + scrollDistance; },
-              pin: false,
-              scrub: 1
-            }
-          });
-        }
-      };
-      // Delay setup slightly so layout is settled
-      setTimeout(setupHorizontalScroll, 100);
-    } else if (techScrollSection && isMobile()) {
-      // On mobile, just fade in the cards staggered
-      var mobileCards = techScrollSection.querySelectorAll('.tech-card');
-      if (mobileCards.length) {
-        gsap.from(mobileCards, {
-          opacity: 0, y: 30, duration: 0.6, stagger: 0.12, ease: 'power3.out',
-          scrollTrigger: {
-            trigger: techScrollSection,
-            start: 'top 82%',
-            once: true
-          }
-        });
-      }
-    }
-
-    // Tech cards on desktop: also fade them in
-    if (techScrollSection && !isMobile()) {
-      var deskCards = techScrollSection.querySelectorAll('.tech-card');
-      if (deskCards.length) {
-        gsap.from(deskCards, {
-          opacity: 0, y: 30, duration: 0.6, stagger: 0.12, ease: 'power3.out',
-          scrollTrigger: {
-            trigger: techScrollSection,
-            start: 'top 82%',
-            once: true
-          }
-        });
-      }
-    }
-
-    // --- Section numbers: parallax (move slower than scroll) ---
-    document.querySelectorAll('.section-number').forEach(function (num) {
-      gsap.to(num, {
-        y: -80,
-        ease: 'none',
-        scrollTrigger: {
-          trigger: num.parentElement,
-          start: 'top bottom',
-          end: 'bottom top',
-          scrub: true
-        }
-      });
+    // 1. Hide all .reveal elements (these are containers like section-header, about-grid, timeline, etc.)
+    document.querySelectorAll('.reveal').forEach(function (el) {
+      el.classList.add('reveal-hidden');
     });
 
-    // --- Generic fallback: any .reveal or .reveal-stagger not yet handled ---
-    document.querySelectorAll('.reveal:not(.gsap-handled)').forEach(function (el) {
-      gsap.from(el, {
-        opacity: 0, y: 40, duration: 0.8, ease: 'power3.out',
-        scrollTrigger: { trigger: el, start: 'top 85%', once: true }
-      });
-    });
-    document.querySelectorAll('.reveal-stagger:not(.gsap-handled)').forEach(function (parent) {
+    // 2. Hide children of .reveal-stagger with stagger delay
+    //    (.reveal-stagger itself is NOT hidden — only its children animate in)
+    document.querySelectorAll('.reveal-stagger').forEach(function (parent) {
       var children = parent.children;
-      if (children.length) {
-        gsap.from(children, {
-          opacity: 0, y: 30, duration: 0.6, stagger: 0.1, ease: 'power3.out',
-          scrollTrigger: { trigger: parent, start: 'top 85%', once: true }
-        });
+      for (var i = 0; i < children.length; i++) {
+        children[i].classList.add('reveal-hidden');
+        children[i].style.transitionDelay = (i * 0.1) + 's';
       }
     });
 
-    // --- Footer reveals ---
-    var footerReveals = document.querySelectorAll('.footer .reveal');
-    footerReveals.forEach(function (el) {
-      // These may already be handled by generic fallback, but ensure they work
-      el.classList.add('gsap-handled');
+    // 3. About section: directional slide for photo/bio (desktop only)
+    //    about-grid has .reveal so it's already hidden. We add direction classes
+    //    so when it reveals, the transform is from-left/from-right instead of translateY.
+    if (!isMobile) {
+      var aboutGrid = document.querySelector('.about-grid.reveal-hidden');
+      if (aboutGrid) {
+        // Don't hide aboutGrid itself — instead hide photo and bio separately for direction
+        aboutGrid.classList.remove('reveal-hidden');
+        var aboutPhoto = aboutGrid.querySelector('.about-photo');
+        var aboutBio = aboutGrid.querySelector('.about-bio');
+        if (aboutPhoto) {
+          aboutPhoto.classList.add('reveal-hidden', 'from-left');
+        }
+        if (aboutBio) {
+          aboutBio.classList.add('reveal-hidden', 'from-right');
+          aboutBio.style.transitionDelay = '0.15s';
+        }
+      }
+    }
+
+    // Create the observer
+    var revealObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('reveal-visible');
+          revealObserver.unobserve(entry.target);
+        }
+      });
+    }, { threshold: 0.05, rootMargin: '0px 0px -40px 0px' });
+
+    // Observe all hidden elements
+    document.querySelectorAll('.reveal-hidden').forEach(function (el) {
+      revealObserver.observe(el);
     });
 
   } else {
-    // GSAP not available or reduced motion: make everything visible immediately
-    document.querySelectorAll('.reveal, .reveal-stagger, .reveal-stagger > *').forEach(function (el) {
-      el.style.opacity = '1';
-      el.style.transform = 'none';
-    });
+    // Reduced motion or no IntersectionObserver: everything stays visible (default)
   }
 
   // ==================== TYPING EFFECT ====================
@@ -689,25 +431,7 @@
     }
   }
 
-  // Use ScrollTrigger if available, otherwise fallback to scroll listener
-  if (!prefersReducedMotion && typeof ScrollTrigger !== 'undefined' && navIndicator) {
-    sections.forEach(function (id) {
-      var sec = document.getElementById(id);
-      if (sec) {
-        ScrollTrigger.create({
-          trigger: sec,
-          start: 'top 40%',
-          end: 'bottom 40%',
-          onEnter: function () { updateActiveSection(); },
-          onEnterBack: function () { updateActiveSection(); },
-          onLeave: function () { updateActiveSection(); },
-          onLeaveBack: function () { updateActiveSection(); }
-        });
-      }
-    });
-  }
-
-  // Also listen to scroll for immediate updates
+  // Listen to scroll for active section updates
   window.addEventListener('scroll', updateActiveSection, { passive: true });
 
   // Update indicator on nav link click

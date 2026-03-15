@@ -1328,18 +1328,45 @@ section {
   pointer-events: auto;
 }
 
-/* ===================== GSAP SCROLL ANIMATIONS ===================== */
-/* The .reveal / .reveal-stagger classes are hooks for GSAP ScrollTrigger.
-   Content is visible by default. GSAP sets opacity:0 via JS only when it's ready,
-   so content is never hidden if GSAP fails to load. */
+/* ===================== SCROLL REVEAL ANIMATIONS ===================== */
+/* Elements start visible by default. JS adds .reveal-hidden on load,
+   then .reveal-visible when they scroll into view. If JS fails, content stays visible. */
+.reveal-hidden {
+  opacity: 0;
+  transform: translateY(40px);
+  transition: opacity 0.8s cubic-bezier(0.16, 1, 0.3, 1),
+              transform 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal-hidden.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Stagger children */
+.reveal-stagger > .reveal-hidden {
+  transform: translateY(30px);
+}
+/* Slide from left */
+.reveal-hidden.from-left {
+  opacity: 0;
+  transform: translateX(-60px);
+}
+.reveal-hidden.from-left.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
+/* Slide from right */
+.reveal-hidden.from-right {
+  opacity: 0;
+  transform: translateX(60px);
+}
+.reveal-hidden.from-right.reveal-visible {
+  opacity: 1;
+  transform: none;
+}
 
 /* 3D perspective wrapper for education cards */
 .education-grid {
   perspective: 1200px;
-}
-.edu-card {
-  transform-style: preserve-3d;
-  backface-visibility: hidden;
 }
 
 /* Horizontal scroll section for tech project cards (desktop) */
@@ -1358,25 +1385,8 @@ section {
   min-height: 180px;
 }
 
-/* Parallax background layer for Beyond Work */
-.beyond-parallax-bg {
-  position: absolute;
-  top: -60px;
-  left: 0;
-  right: 0;
-  bottom: -60px;
-  background: radial-gradient(ellipse at 30% 50%, rgba(201,169,110,0.06) 0%, transparent 70%);
-  pointer-events: none;
-  z-index: 0;
-  will-change: transform;
-}
 #beyond { position: relative; }
 #beyond > .container { position: relative; z-index: 1; }
-
-/* Section number parallax */
-.section-number {
-  will-change: transform;
-}
 
 /* ===================== DETAIL PAGE STYLES ===================== */
 .detail-hero {
