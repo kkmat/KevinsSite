@@ -443,6 +443,58 @@
     counters.forEach(function (el) { counterObserver.observe(el); });
   }
 
+  // ==================== PHASE 3: INTERACTIVE CARDS ====================
+
+  // --- Touch device detection ---
+  var isTouchDevice = ('ontouchstart' in window) || (navigator.maxTouchPoints > 0);
+
+  // --- 3D Tilt on Leader Cards (desktop only) ---
+  if (!isTouchDevice && !prefersReducedMotion) {
+    document.querySelectorAll('.leader-card').forEach(function (card) {
+      card.addEventListener('mouseenter', function () {
+        card.classList.add('tilt-active');
+      });
+      card.addEventListener('mousemove', function (e) {
+        var rect = card.getBoundingClientRect();
+        var x = e.clientX - rect.left;
+        var y = e.clientY - rect.top;
+        var centerX = rect.width / 2;
+        var centerY = rect.height / 2;
+        var rotateX = (y - centerY) / centerY * -8;
+        var rotateY = (x - centerX) / centerX * 8;
+        card.style.transform = 'perspective(1000px) rotateX(' + rotateX + 'deg) rotateY(' + rotateY + 'deg)';
+      });
+      card.addEventListener('mouseleave', function () {
+        card.classList.remove('tilt-active');
+        card.style.transform = '';
+      });
+    });
+  }
+
+  // --- Timeline: click-to-expand ---
+  document.querySelectorAll('.timeline-item').forEach(function (item) {
+    item.addEventListener('click', function (e) {
+      // Don't toggle if clicking a link inside the timeline item
+      if (e.target.closest('a')) return;
+      item.classList.toggle('expanded');
+    });
+  });
+
+  // --- Education cards: floating animation (activate when in viewport) ---
+  var eduCards = document.querySelectorAll('.edu-card');
+  if (eduCards.length && !prefersReducedMotion && 'IntersectionObserver' in window) {
+    var floatObserver = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('floating');
+        } else {
+          entry.target.classList.remove('floating');
+        }
+      });
+    }, { threshold: 0.2 });
+    eduCards.forEach(function (card) { floatObserver.observe(card); });
+  }
+
   // ==================== HERO PARALLAX (handled by hero.js WebGL) ====================
 
   // ==================== SCROLL TO TOP ====================

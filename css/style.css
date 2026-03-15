@@ -1086,6 +1086,134 @@ section {
   letter-spacing: 0.05em;
 }
 
+/* ===================== PHASE 3: INTERACTIVE CARDS ===================== */
+
+/* --- Leader cards: 3D tilt support --- */
+.leader-card {
+  transform-style: preserve-3d;
+  will-change: transform;
+}
+.leader-card.tilt-active {
+  transition: none;
+}
+.leader-card.tilt-active:hover {
+  /* Override the default translateY hover when tilt is active */
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  border-color: rgba(201,169,110,0.2);
+}
+
+/* --- Timeline: click-to-expand --- */
+.timeline-item {
+  cursor: pointer;
+}
+.timeline-detail {
+  max-height: 0;
+  overflow: hidden;
+  opacity: 0;
+  color: var(--text-muted);
+  font-size: 0.85rem;
+  line-height: 1.7;
+  margin-top: 0;
+  transition: max-height 0.5s var(--ease-out), opacity 0.4s var(--ease), margin-top 0.4s var(--ease);
+}
+.timeline-item.expanded .timeline-detail {
+  max-height: 200px;
+  opacity: 1;
+  margin-top: 0.75rem;
+}
+.timeline-item.expanded .timeline-oneliner::after {
+  content: '';
+}
+.timeline-oneliner {
+  position: relative;
+}
+.timeline-oneliner::after {
+  content: ' (click to expand)';
+  font-size: 0.7rem;
+  color: var(--gold);
+  opacity: 0;
+  transition: opacity 0.3s var(--ease);
+}
+.timeline-item:hover .timeline-oneliner::after {
+  opacity: 0.7;
+}
+.timeline-item.expanded:hover .timeline-oneliner::after {
+  opacity: 0;
+}
+.section-light .timeline-detail { color: var(--text-dark-muted); }
+
+/* --- Tech cards: glassmorphism with gold border glow --- */
+.tech-card {
+  background: rgba(255,255,255,0.05);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border: 1px solid rgba(201,169,110,0.2);
+  transition: transform 0.4s var(--ease-out), border-color 0.4s var(--ease), box-shadow 0.4s var(--ease);
+}
+.tech-card:hover {
+  border-color: rgba(201,169,110,0.6);
+  box-shadow: 0 0 30px rgba(201,169,110,0.15), 0 0 60px rgba(201,169,110,0.05);
+}
+/* Preserve gradient backgrounds but make them semi-transparent for glassmorphism effect */
+.tech-card.gradient-1 { background: linear-gradient(135deg, rgba(26,10,48,0.7), rgba(201,169,110,0.5)); }
+.tech-card.gradient-2 { background: linear-gradient(135deg, rgba(10,22,40,0.7), rgba(30,58,95,0.5)); }
+.tech-card.gradient-3 { background: linear-gradient(135deg, rgba(10,26,18,0.7), rgba(45,122,80,0.5)); }
+
+/* Tech card description reveal on hover */
+.tech-card p {
+  opacity: 0.6;
+  transform: translateY(5px);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease);
+}
+.tech-card:hover p {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* --- Education cards: floating bob animation --- */
+@keyframes eduFloat {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-6px); }
+}
+.edu-card {
+  animation: eduFloat 4s ease-in-out infinite;
+  animation-play-state: paused;
+}
+.edu-card.floating {
+  animation-play-state: running;
+}
+/* Stagger the animation for multiple cards */
+.edu-card:nth-child(2) { animation-delay: -2s; }
+.edu-card:nth-child(3) { animation-delay: -1s; }
+.edu-card:nth-child(4) { animation-delay: -3s; }
+
+/* --- Research cards: abstract preview overlay --- */
+.research-card {
+  position: relative;
+  overflow: hidden;
+}
+.research-abstract {
+  position: absolute;
+  inset: 0;
+  background: rgba(26,26,26,0.95);
+  color: var(--cream);
+  padding: 1.5rem;
+  font-size: 0.8rem;
+  line-height: 1.7;
+  display: flex;
+  align-items: center;
+  opacity: 0;
+  transform: translateY(100%);
+  transition: opacity 0.4s var(--ease), transform 0.4s var(--ease-out);
+  border-radius: 14px;
+  pointer-events: none;
+}
+.research-card:hover .research-abstract {
+  opacity: 1;
+  transform: translateY(0);
+  pointer-events: auto;
+}
+
 /* ===================== GSAP SCROLL ANIMATIONS ===================== */
 /* Initial hidden states — GSAP will animate these via JS.
    The .reveal / .reveal-stagger classes still exist in HTML as hooks for GSAP. */
@@ -1364,6 +1492,13 @@ section {
   .hero-line { height: 50px; }
 }
 
+/* Phase 3: touch device overrides */
+@media (hover: none) {
+  .timeline-oneliner::after { content: ' (tap to expand)'; }
+  .research-abstract { display: none; }
+  .tech-card p { opacity: 1; transform: none; }
+}
+
 /* ===================== REDUCED MOTION ===================== */
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after {
@@ -1402,6 +1537,13 @@ section {
   .edu-card {
     opacity: 1 !important;
     transform: none !important;
+    animation: none !important;
   }
+  .timeline-detail {
+    max-height: none !important;
+    opacity: 1 !important;
+    overflow: visible !important;
+  }
+  .research-abstract { display: none !important; }
   .beyond-parallax-bg { display: none !important; }
 }
