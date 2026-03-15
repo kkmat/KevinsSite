@@ -512,6 +512,189 @@
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
 
+  // ==================== PHASE 4: CUSTOM CURSOR ====================
+  var cursorDot = document.getElementById('cursorDot');
+  var cursorRing = document.getElementById('cursorRing');
+
+  if (cursorDot && cursorRing && !isTouchDevice && !prefersReducedMotion) {
+    document.body.classList.add('has-custom-cursor');
+
+    var mouseX = 0, mouseY = 0;
+    var ringX = 0, ringY = 0;
+    var cursorVisible = false;
+
+    // Track mouse position
+    document.addEventListener('mousemove', function (e) {
+      mouseX = e.clientX;
+      mouseY = e.clientY;
+      // Position dot immediately (no lag)
+      cursorDot.style.left = mouseX + 'px';
+      cursorDot.style.top = mouseY + 'px';
+
+      if (!cursorVisible) {
+        cursorVisible = true;
+        cursorDot.classList.add('visible');
+        cursorRing.classList.add('visible');
+        ringX = mouseX;
+        ringY = mouseY;
+      }
+    });
+
+    // Hide cursor when leaving window
+    document.addEventListener('mouseleave', function () {
+      cursorDot.classList.remove('visible');
+      cursorRing.classList.remove('visible');
+      cursorVisible = false;
+    });
+    document.addEventListener('mouseenter', function () {
+      cursorDot.classList.add('visible');
+      cursorRing.classList.add('visible');
+      cursorVisible = true;
+    });
+
+    // Click feedback
+    document.addEventListener('mousedown', function () {
+      cursorDot.classList.add('clicking');
+      cursorRing.classList.add('clicking');
+    });
+    document.addEventListener('mouseup', function () {
+      cursorDot.classList.remove('clicking');
+      cursorRing.classList.remove('clicking');
+    });
+
+    // Hover detection for interactive elements
+    var hoverTargets = 'a, button, .leader-card, .timeline-item, .beyond-card, .edu-card, .tech-card, .research-card, .pill, .cred-badge, .social-link, .btn, .nav-toggle, .scroll-top, input, textarea, .scroll-indicator';
+
+    document.addEventListener('mouseover', function (e) {
+      if (e.target.closest(hoverTargets)) {
+        cursorDot.classList.add('hovering');
+        cursorRing.classList.add('hovering');
+      }
+    });
+    document.addEventListener('mouseout', function (e) {
+      if (e.target.closest(hoverTargets)) {
+        cursorDot.classList.remove('hovering');
+        cursorRing.classList.remove('hovering');
+      }
+    });
+
+    // Ring follows with lerp (lag effect) via requestAnimationFrame
+    function animateCursorRing() {
+      ringX += (mouseX - ringX) * 0.15;
+      ringY += (mouseY - ringY) * 0.15;
+      cursorRing.style.left = ringX + 'px';
+      cursorRing.style.top = ringY + 'px';
+      requestAnimationFrame(animateCursorRing);
+    }
+    animateCursorRing();
+
+  } else if (cursorDot && cursorRing) {
+    // Touch device or reduced motion — hide cursors, add touch class
+    document.body.classList.add('touch-device');
+  }
+
+  // ==================== PHASE 4: NAV INDICATOR & ACTIVE SECTION ====================
+  var navLinksContainer = document.querySelector('.nav-links');
+  var navIndicator = document.querySelector('.nav-indicator');
+  var navAnchors = navLinksContainer ? navLinksContainer.querySelectorAll('a[href^="#"]') : [];
+  var sections = ['about', 'experience', 'beyond', 'education', 'contact'];
+
+  function moveIndicator(link) {
+    if (!navIndicator || !link || !navLinksContainer) return;
+    var linkRect = link.getBoundingClientRect();
+    var containerRect = navLinksContainer.getBoundingClientRect();
+    navIndicator.style.left = (linkRect.left - containerRect.left) + 'px';
+    navIndicator.style.width = linkRect.width + 'px';
+    navIndicator.classList.add('active');
+  }
+
+  function clearIndicator() {
+    if (!navIndicator) return;
+    navIndicator.classList.remove('active');
+    navAnchors.forEach(function (a) { a.classList.remove('active'); });
+  }
+
+  function updateActiveSection() {
+    if (window.innerWidth <= 768) return; // no indicator on mobile
+
+    var scrollY = window.scrollY;
+    var navH = nav ? nav.offsetHeight : 0;
+    var activeId = null;
+
+    // If at the top (hero), clear indicator
+    if (scrollY < 300) {
+      clearIndicator();
+      return;
+    }
+
+    // Find which section is in view
+    for (var i = sections.length - 1; i >= 0; i--) {
+      var sec = document.getElementById(sections[i]);
+      if (sec) {
+        var top = sec.offsetTop - navH - 100;
+        if (scrollY >= top) {
+          activeId = sections[i];
+          break;
+        }
+      }
+    }
+
+    if (activeId) {
+      navAnchors.forEach(function (a) {
+        var href = a.getAttribute('href');
+        if (href === '#' + activeId) {
+          a.classList.add('active');
+          moveIndicator(a);
+        } else {
+          a.classList.remove('active');
+        }
+      });
+    } else {
+      clearIndicator();
+    }
+  }
+
+  // Use ScrollTrigger if available, otherwise fallback to scroll listener
+  if (!prefersReducedMotion && typeof ScrollTrigger !== 'undefined' && navIndicator) {
+    sections.forEach(function (id) {
+      var sec = document.getElementById(id);
+      if (sec) {
+        ScrollTrigger.create({
+          trigger: sec,
+          start: 'top 40%',
+          end: 'bottom 40%',
+          onEnter: function () { updateActiveSection(); },
+          onEnterBack: function () { updateActiveSection(); },
+          onLeave: function () { updateActiveSection(); },
+          onLeaveBack: function () { updateActiveSection(); }
+        });
+      }
+    });
+  }
+
+  // Also listen to scroll for immediate updates
+  window.addEventListener('scroll', updateActiveSection, { passive: true });
+
+  // Update indicator on nav link click
+  navAnchors.forEach(function (a) {
+    a.addEventListener('click', function () {
+      var self = a;
+      // Delay to let scroll happen
+      setTimeout(function () { moveIndicator(self); }, 100);
+    });
+  });
+
+  // Recalculate on resize
+  window.addEventListener('resize', function () {
+    var activeLink = navLinksContainer ? navLinksContainer.querySelector('a.active') : null;
+    if (activeLink) {
+      moveIndicator(activeLink);
+    }
+  });
+
+  // Initial check
+  updateActiveSection();
+
   // ==================== DETAIL PAGE NAV ====================
   if (document.querySelector('.detail-hero')) {
     if (nav) nav.classList.add('scrolled');

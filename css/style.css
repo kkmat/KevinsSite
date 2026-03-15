@@ -27,6 +27,85 @@
   --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/* ===================== CUSTOM CURSOR ===================== */
+.cursor-dot {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 8px;
+  height: 8px;
+  background: var(--gold);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+  transition: transform 0.15s var(--ease), background 0.2s var(--ease);
+  opacity: 0;
+}
+.cursor-ring {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 36px;
+  height: 36px;
+  border: 1.5px solid rgba(201,169,110,0.5);
+  border-radius: 50%;
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+  transition: width 0.3s var(--ease), height 0.3s var(--ease),
+              border-color 0.3s var(--ease), background 0.3s var(--ease),
+              opacity 0.3s var(--ease);
+  opacity: 0;
+}
+/* Cursor visible once mouse moves */
+.cursor-dot.visible, .cursor-ring.visible { opacity: 1; }
+
+/* Cursor hover state: grow ring, add blend */
+.cursor-dot.hovering {
+  transform: translate(-50%, -50%) scale(0.5);
+  background: var(--white);
+}
+.cursor-ring.hovering {
+  width: 56px;
+  height: 56px;
+  border-color: var(--gold);
+  background: rgba(201,169,110,0.08);
+  mix-blend-mode: difference;
+}
+
+/* Cursor click state */
+.cursor-dot.clicking {
+  transform: translate(-50%, -50%) scale(0.4);
+}
+.cursor-ring.clicking {
+  width: 30px;
+  height: 30px;
+  border-color: var(--gold-hover);
+}
+
+/* Hide custom cursor on touch devices */
+.touch-device .cursor-dot,
+.touch-device .cursor-ring { display: none !important; }
+/* Hide default cursor on desktop when custom cursor is active */
+.has-custom-cursor { cursor: none !important; }
+.has-custom-cursor a,
+.has-custom-cursor button,
+.has-custom-cursor .leader-card,
+.has-custom-cursor .timeline-item,
+.has-custom-cursor .beyond-card,
+.has-custom-cursor .edu-card,
+.has-custom-cursor .tech-card,
+.has-custom-cursor .research-card,
+.has-custom-cursor .pill,
+.has-custom-cursor .cred-badge,
+.has-custom-cursor .social-link,
+.has-custom-cursor .btn,
+.has-custom-cursor .nav-toggle,
+.has-custom-cursor .scroll-top,
+.has-custom-cursor input,
+.has-custom-cursor textarea { cursor: none !important; }
+
 /* ===================== RESET ===================== */
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 html { scroll-behavior: smooth; }
@@ -111,6 +190,27 @@ h1, h2, h3, h4, h5, h6 {
 }
 .nav-links a:hover { color: var(--white); }
 .nav-links a:hover::after { width: 100%; }
+.nav-links a.active { color: var(--white); }
+
+/* Nav sliding indicator */
+.nav-links {
+  position: relative;
+}
+.nav-indicator {
+  position: absolute;
+  bottom: -4px;
+  left: 0;
+  height: 2px;
+  background: var(--gold);
+  border-radius: 1px;
+  transition: left 0.4s var(--ease-out), width 0.4s var(--ease-out), opacity 0.3s;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 0 8px rgba(201,169,110,0.3);
+}
+.nav-indicator.active {
+  opacity: 1;
+}
 
 /* Hamburger */
 .nav-toggle {
@@ -945,16 +1045,23 @@ section {
   z-index: 900;
   opacity: 0;
   visibility: hidden;
-  transition: opacity 0.3s var(--ease), visibility 0.3s var(--ease), transform 0.3s var(--ease);
+  transform: scale(0.5) translateY(20px);
+  transition: opacity 0.4s var(--ease-out), visibility 0.4s var(--ease-out),
+              transform 0.4s var(--ease-out), background 0.3s var(--ease);
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
 }
 .scroll-top:hover {
   background: var(--gold-hover);
-  transform: translateY(-2px);
+  transform: scale(1.1) translateY(-2px);
+  box-shadow: 0 8px 24px rgba(201,169,110,0.3);
+}
+.scroll-top:active {
+  transform: scale(0.95);
 }
 .scroll-top.visible {
   opacity: 1;
   visibility: visible;
+  transform: scale(1) translateY(0);
 }
 .scroll-top svg {
   width: 20px;
@@ -1492,8 +1599,15 @@ section {
   .hero-line { height: 50px; }
 }
 
+/* Phase 4: hide custom cursor on mobile */
+@media (max-width: 768px) {
+  .cursor-dot, .cursor-ring { display: none !important; }
+  .nav-indicator { display: none !important; }
+}
+
 /* Phase 3: touch device overrides */
 @media (hover: none) {
+  .cursor-dot, .cursor-ring { display: none !important; }
   .timeline-oneliner::after { content: ' (tap to expand)'; }
   .research-abstract { display: none; }
   .tech-card p { opacity: 1; transform: none; }
@@ -1515,6 +1629,7 @@ section {
     transform: none !important;
     animation: none !important;
   }
+  .cursor-dot, .cursor-ring { display: none !important; }
   #heroCanvas { display: none !important; }
   .scroll-indicator {
     opacity: 1 !important;
