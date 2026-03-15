@@ -41,6 +41,7 @@
   transform: translate(-50%, -50%);
   transition: transform 0.15s var(--ease), background 0.2s var(--ease);
   opacity: 0;
+  will-change: left, top, transform;
 }
 .cursor-ring {
   position: fixed;
@@ -57,6 +58,7 @@
               border-color 0.3s var(--ease), background 0.3s var(--ease),
               opacity 0.3s var(--ease);
   opacity: 0;
+  will-change: left, top, width, height;
 }
 /* Cursor visible once mouse moves */
 .cursor-dot.visible, .cursor-ring.visible { opacity: 1; }
@@ -2074,5 +2076,33 @@ body.page-exit {
     -webkit-text-fill-color: unset !important;
     background: none !important;
     animation: none !important;
+  }
+  /* Phase 6: disable page exit animation */
+  body.page-exit {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Disable section number parallax transform */
+  .section-number {
+    transform: none !important;
+  }
+  /* Disable tech card hover description reveal animation */
+  .tech-card p {
+    opacity: 1 !important;
+    transform: none !important;
+  }
+  /* Disable about photo hover zoom */
+  .about-photo:hover img {
+    transform: none !important;
+  }
+  /* Disable beyond card image parallax zoom */
+  .beyond-card-img,
+  .edu-card-img {
+    transform: none !important;
+  }
+  /* Disable company logo hover scale */
+  .company-logo:hover {
+    transform: none !important;
   }
 }
