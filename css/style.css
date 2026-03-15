@@ -1330,14 +1330,29 @@ section {
 
 /* ===================== GSAP SCROLL ANIMATIONS ===================== */
 /* Initial hidden states — GSAP will animate these via JS.
-   The .reveal / .reveal-stagger classes still exist in HTML as hooks for GSAP. */
+   The .reveal / .reveal-stagger classes still exist in HTML as hooks for GSAP.
+   Fallback: if GSAP hasn't added .gsap-handled within 2s, CSS transition makes them visible. */
 .reveal {
   opacity: 0;
   transform: translateY(40px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition-delay: 2s;
 }
 .reveal-stagger > * {
   opacity: 0;
   transform: translateY(30px);
+  transition: opacity 0.8s ease, transform 0.8s ease;
+  transition-delay: 2s;
+}
+/* If GSAP hasn't claimed the element, CSS fallback kicks in after 2s */
+.reveal:not(.gsap-handled) {
+  animation: revealFallback 0s 2s forwards;
+}
+.reveal-stagger:not(.gsap-handled) > * {
+  animation: revealFallback 0s 2s forwards;
+}
+@keyframes revealFallback {
+  to { opacity: 1; transform: none; }
 }
 
 /* 3D perspective wrapper for education cards */

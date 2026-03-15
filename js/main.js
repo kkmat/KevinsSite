@@ -2,6 +2,17 @@
 (function () {
   'use strict';
 
+  // ==================== SAFETY NET: force content visible after 3s ====================
+  setTimeout(function () {
+    document.querySelectorAll('.reveal, .reveal-stagger > *, .hero-reveal').forEach(function (el) {
+      if (getComputedStyle(el).opacity === '0') {
+        el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+        el.style.opacity = '1';
+        el.style.transform = 'none';
+      }
+    });
+  }, 3000);
+
   // ==================== REDUCED MOTION CHECK ====================
   var prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
