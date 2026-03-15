@@ -148,16 +148,7 @@
     counters.forEach(function (el) { counterObserver.observe(el); });
   }
 
-  // ==================== HERO PARALLAX ====================
-  var heroBg = document.querySelector('.hero-bg');
-  if (heroBg) {
-    window.addEventListener('scroll', function () {
-      var scrolled = window.scrollY;
-      if (scrolled < window.innerHeight) {
-        heroBg.style.transform = 'translateY(' + (scrolled * 0.3) + 'px) scale(1.1)';
-      }
-    }, { passive: true });
-  }
+  // ==================== HERO PARALLAX (handled by hero.js WebGL) ====================
 
   // ==================== SCROLL TO TOP ====================
   var scrollBtn = document.createElement('button');
